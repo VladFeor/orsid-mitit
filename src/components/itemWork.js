@@ -88,7 +88,6 @@ function ItemWork({ item }) {
                 <div className="element__text">{`${year}-${month}-${day}`}</div>
             </div>
         }
-
     }
     const itemSource = () => <div className="item__source">Джерело
         : {' '}
@@ -108,14 +107,8 @@ function ItemWork({ item }) {
                     {itemDate()}
                     {itemExternalType()}
                     {itemPartOfISSN()}
-                    {/* <div className="item__li">CONTRIBUTORS: Revillard, A.</div> */}
                     <div className={`details ${isOpenDetails ? 'open' : ''}`} >
                         {itemURL()}
-                        {/* <div className="element__details">
-                            <div className="element__name">Contributors</div>
-                            <div className="element__text">Revillard, A.</div>
-                        </div> */}
-
                         {itemAdded()}
                         {itemLastModified()}
                     </div>
@@ -123,7 +116,7 @@ function ItemWork({ item }) {
                         {isOpenDetails ? 'Згорнути' : 'Більше інформації'}
                     </div>
                 </div>
-                {itemSource()}
+                {/* {itemSource()} */}
             </div>
         </div>
     );

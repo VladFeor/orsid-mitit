@@ -6,35 +6,42 @@ import DepartmentItem from './departmentItem';
 
 function Panel(props) {
     const [listTeaches, setListTeachers] = useState([])
-
+    const [loadingData, setLoadingData] = useState('Триває загрузка')
     const getTeacherHandler = (orcidAPI) => {
         props.getItemsForContent(orcidAPI, listTeaches)
     }
 
-    const updateTeacherList = (sectionDepartment) => {
-        const apiUrl = 'https://us-central1-orcid-194b3.cloudfunctions.net/api/getAllTeachers';
-        axios.get(apiUrl)
-            .then(response => {
-                const jsonString = JSON.stringify(response.data);
-                localStorage.setItem("teachers", jsonString);
-
-
-                props.setDataDepartments(response.data)
-                setListTeachers(...listTeaches, response.data)
-                response.data.forEach(item => { props.getAllParamsTeacher(item.orcid) })
-                // props.changeDepartmentData(response.data, sectionDepartment)
+    const updateTeacherList = async (sectionDepartment) => {
+        const instance = axios.create({
+            baseURL: 'https://localhost:3300',
+        });
+        try {
+            const response = await instance.get('/users');
+            const listTeachesCorrect = response.data.filter(teach => {
+                return (
+                    teach.createdAt !== null &&
+                    teach.full_name !== null &&
+                    teach.id !== null &&
+                    teach.orcid !== null &&
+                    teach.position !== null &&
+                    teach.rank !== null &&
+                    teach.section !== null &&
+                    teach.updatedAt !== null
+                );
             })
-            .catch(error => {
-                const teachers = localStorage.getItem("teachers");
-                const retrievedTeachers = JSON.parse(`${teachers}`);
-                if (Array.isArray(listTeaches)) {
-                    setListTeachers(...listTeaches, retrievedTeachers)
-                }
-                props.setDataDepartments(retrievedTeachers)
-                // props.changeDepartmentData(retrievedTeachers, sectionDepartment)
-                console.error('Произошла ошибка при запросе к API: Дані не оновлено ' + error);
-            });
+            props.setDataDepartments(listTeachesCorrect)
+            setListTeachers(listTeachesCorrect)
+        } catch (error) {
+            console.error('Ошибка при получении данных:', error);
+            // throw error;
+        }
     }
+    // const getAllInfoTeachers = () =>{
+    //     listTeaches.forEach(item =>{
+    //         props.getItemsForContent(item.orcid,listTeaches,false)
+    //     })
+    //     setLoadingData('Всі дані оновлено')
+    // }
     useEffect(() => {
         updateTeacherList()
     }, []);
@@ -42,8 +49,10 @@ function Panel(props) {
         <div>
             <div className="header">
                 <div className="depart__content">
-                    {props.departments.map(department => {
+                    {props.departments.map((department, index) => {
                         return <DepartmentItem
+                            searchDepartment={props.searchDepartment}
+                            key={index}
                             department={department}
                             getTeacherHandler={getTeacherHandler}
                         />
@@ -77,28 +86,24 @@ function Panel(props) {
                             />
                         </div>
                     </div>
-                </div>
-
-
-            </div>
-            <div className='avatar'>
-                <div className='container'>
-                    <div className="person">
-
-                        <div className="person__photo"><img src={logoDepartment} alt="" />
-                        </div>
-                        {props.teacher
-                            ?
-                            <div>
-                                <div className="person__name">{props.teacher.position}</div>
-                                <div className="person__name">{props.teacher.rank} {props.teacher.fullName}</div>
+                    {/* <div className="account__content">
+                        <div className="account">
+                            <div className="account__photo">
+                                <img src={logoDepartment} alt="" />
                             </div>
-                            :
-                            <div className="person__name">Оберить викладача</div>
-                        }
-                    </div>
+                            <MyModal
+                                key={'addDepartment'}
+                                nameModal='Підгрузити дані'
+                                statusLoading={loadingData}
+                                updateTeacherList={getAllInfoTeachers}
+                            />
+                        </div>
+                    </div> */}
                 </div>
+
+
             </div>
+
 
 
         </div>

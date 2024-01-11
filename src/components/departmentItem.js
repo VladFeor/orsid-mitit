@@ -3,13 +3,12 @@ import arrow from '../img/right-arrow.png'
 
 
 
-function DepartmentItem({ department, getTeacherHandler }) {
+function DepartmentItem({ department, getTeacherHandler, searchDepartment }) {
 
     const [isOpenItems, setIsOpenItems] = useState(false)
 
     const toggleIsOpenItems = () => {
-        console.log('change')
-        setIsOpenItems(!isOpenItems)
+        searchDepartment(department.sectionDepartment)
     }
     const checkedIsNumber = (value) => {
         const parsedNumber = parseFloat(value);
@@ -26,10 +25,10 @@ function DepartmentItem({ department, getTeacherHandler }) {
             >
                 <div className="department__name">{checkedIsNumber(department.sectionDepartment)}</div>
                 <img src={arrow} alt=""
-                    style={isOpenItems ? { rotate: '90deg' } : {}}
+                    // style={isOpenItems ? { rotate: '90deg' } : {}}
                 />
             </div>
-            <div className={isOpenItems ? "list__department open" : "list__department"}>
+            {/* <div className={isOpenItems ? "list__department open" : "list__department"}>
                 {(department.teacherList.length != 0) && department.teacherList.map(item => {
                     return <div className="teacher"
                         onClick={() => getTeacherHandler(item.orcid)}
@@ -37,10 +36,10 @@ function DepartmentItem({ department, getTeacherHandler }) {
                     >
                         {item.rank}
                         <br />
-                        {item.fullName}
+                        {item.full_name}
                     </div>
                 })}
-            </div>
+            </div> */}
         </div>
     );
 }

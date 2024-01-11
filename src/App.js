@@ -1,9 +1,11 @@
 import './App.css';
-import logo from './img/Department of _COMPUTER INFORMATION TECHNOLOGIES.png';
-import Header from './components/header';
+import Header from './components/panel';
 import WorkContent from './components/worksContent';
 import { useState } from 'react';
 import axios from 'axios';
+import logo from './img/Department of _COMPUTER INFORMATION TECHNOLOGIES.png';
+import { setDataDepartmentsController } from './controller/appController';
+import TeacherList from './components/teacherList';
 
 
 function App() {
@@ -11,7 +13,8 @@ function App() {
   const [teacher, setTeacher] = useState()
   const [isLoading, setIsLoading] = useState(false);
   const [departments, setDepartments] = useState([])
-
+  const [teacherList, setTeacherList] = useState()
+  const [isTeacherList, setIsTeacherList] = useState(false)
 
 
   const addNewDepartment = (sectionDepartment) => {
@@ -22,83 +25,76 @@ function App() {
     updatedDepartments.sort((a, b) => a.sectionDepartment - b.sectionDepartment);
     setDepartments(updatedDepartments)
   }
-
+  const toggleIsOpenTeacherList = () => {
+    setIsTeacherList(true)
+  }
   const setDataDepartments = (listTeaches) => {
-    const countsDepartment = listTeaches.map(item => item.section)
-    const updatedDepartments = countsDepartment.map(item => {
-      if (typeof item === 'number' || (typeof item === 'string' && item != '')) {
-        const existingDepartment = departments.find(department => department.sectionDepartment === item);
-        if (!existingDepartment) {
-          const teachersForDepartment = listTeaches.filter(teacher => teacher.section === item);
-          return {
-            sectionDepartment: item,
-            teacherList: teachersForDepartment,
-          };
-        }
-        return existingDepartment;
+    setDepartments(setDataDepartmentsController(listTeaches, departments));
+  }
+  const searchDepartment = (sectionDepartment) => {
+    const foundDepartment = departments.find(department => department.sectionDepartment === sectionDepartment);
+    if (foundDepartment) {
+      setTeacherList(foundDepartment.teacherList)
+      toggleIsOpenTeacherList()
+    }
+  }
+  const getItemsForContent = async (orsidAPI, listTeaches, showUpdate = true) => {
+    if (showUpdate) {
+      setIsTeacherList(false)
+      const findTeacher = listTeaches.find(el => el.orcid === orsidAPI)
+      console.log(findTeacher)
+      setIsLoading(true);
+      setTeacher(findTeacher)
+    }
+
+    const instance = axios.create({
+      baseURL: 'https://localhost:3300',
+    });
+    try {
+      const response = await instance.get(`/getDataByOrcid/${orsidAPI}`);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+      if (showUpdate) {
+        setListWorks(response.data.data)
+
       }
-    }).filter(item => item != undefined);
-
-    const uniqueDepartments = Array.from(new Set(updatedDepartments.map(item => item.sectionDepartment)))
-      .map(sectionDepartment => updatedDepartments.find(item => item.sectionDepartment === sectionDepartment)).sort((a, b) => {
-        if (a.sectionDepartment < b.sectionDepartment) return -1;
-        if (a.sectionDepartment > b.sectionDepartment) return 1;
-        return 0;
-      });
-    setDepartments(uniqueDepartments);
-  }
-  console.log(listWorks )
-  const getAllParamsTeacher = (orsidAPI) => {
-    const apiUrl = `https://us-central1-orcid-194b3.cloudfunctions.net/api/getInfoByOrcid/${orsidAPI}`;
-
-    axios.get(apiUrl)
-      .then(response => {
-        const jsonString = JSON.stringify(response.data.works.group);
-        localStorage.setItem(orsidAPI, jsonString);
-      })
-      .catch(error => {
-        console.error('Произошла ошибка при запросе к API:', error);
-      });
+    } catch (error) {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+      console.error('Ошибка при получении данных:', error);
+      throw error;
+    }
   }
 
-  const getItemsForContent = (orsidAPI, listTeaches) => {
-    const findTeacher = listTeaches.find(el => el.orcid === orsidAPI)
-    setIsLoading(true);
-    setTeacher(findTeacher)
-    const apiUrl = `https://us-central1-orcid-194b3.cloudfunctions.net/api/getInfoByOrcid/${orsidAPI}`;
-    axios.get(apiUrl)
-      .then(response => {
-        setListWorks([])
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-        setListWorks(response.data.works.group)
-      })
-      .catch(error => {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-        const teachersWorks = localStorage.getItem(orsidAPI);
-        const retrievedTeachersWorks = JSON.parse(`${teachersWorks}`);
-        setListWorks(retrievedTeachersWorks)
-        console.error('Произошла ошибка при запросе к API:', error);
-      });
-  }
   return (
     <div className="App">
       <img className='fix' src={logo} />
       <Header
+        searchDepartment={searchDepartment}
         getItemsForContent={getItemsForContent}
         departments={departments}
         addNewDepartment={addNewDepartment}
-        getAllParamsTeacher={getAllParamsTeacher}
         teacher={teacher}
         setDataDepartments={setDataDepartments}
       />
-      <WorkContent
-        listWorks={listWorks}
-        isLoading={isLoading}
-      />
+      {isTeacherList
+        ?
+        <TeacherList
+          toggleIsOpenTeacherList={toggleIsOpenTeacherList}
+          teacherList={teacherList}
+          getItemsForContent={getItemsForContent}
+        />
+        :
+        <WorkContent
+          teacher={teacher}
+          listWorks={listWorks}
+          isLoading={isLoading}
+
+        />
+      }
+
     </div>
   );
 }
