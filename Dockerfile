@@ -7,6 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY src .
+COPY public ./public
 
 EXPOSE 3000
 
