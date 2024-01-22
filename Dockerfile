@@ -4,8 +4,6 @@ WORKDIR /front
 
 COPY package*.json ./
 
-RUN npm install -g react-scripts
-
 RUN npm install
 
 COPY . .
