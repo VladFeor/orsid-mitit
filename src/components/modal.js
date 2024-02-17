@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
 import Loading from './loading';
@@ -7,7 +7,7 @@ import Loading from './loading';
 Modal.setAppElement('#root');
 
 function MyModal(props) {
-    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(props.openModal);
     const [nameTeacher, setNameTeacher] = useState('');
     const [orcidTeacher, setOrcidTeacher] = useState('');
     const [rankTeacher, setRankTeacher] = useState('Працівник ЗСУ');
@@ -31,10 +31,16 @@ function MyModal(props) {
 
     const openModal = () => {
         setModalIsOpen(true);
+        if (props.switchOpenModal) {
+            props.switchOpenModal(true)
+        }
     };
 
     const closeModal = () => {
         setModalIsOpen(false);
+        if (props.switchOpenModal) {
+            props.switchOpenModal(false)
+        }
     };
 
     const handleTeacherNameChange = (event) => {
@@ -81,116 +87,9 @@ function MyModal(props) {
             section: section,
             rank: rankTeacher,
         }
-        const arrTeacher = [
-            {
-                full_name: "Храбан Т.Є.",
-                orcid: "0000-0001-5169-5170",
-                position: "Завідуюча кафедри",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Довганець В.І.",
-                orcid: "0000-0002-8340-9789",
-                position: "Заступник зав. каф.",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Юхименко В.О.",
-                orcid: "0000-0002-7039-4741",
-                position: "Доцент",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Жукович І.І.",
-                orcid: "0000-0002-5026-259X",
-                position: "Доцент",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Коваленко О.М.",
-                orcid: "0000-0001-8174-1780",
-                position: "Доцент",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Кодола Р.М.",
-                orcid: "0000-0002-5647-784X",
-                position: "Доцент",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Гордієнко О.С.",
-                orcid: "0009-0004-6229-5374",
-                position: "Старший викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Задорожна О.В.",
-                orcid: "0009-0007-0127-2250",
-                position: "Старший викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Дідурик А.І.",
-                orcid: "0009-0002-8227-4488",
-                position: "Старший викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Бужикова Т.О.",
-                orcid: "0000-0002-8117-965X",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Галка Ю.М.",
-                orcid: "0000-0002-3329-8638",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Кочупалова Т.В.",
-                orcid: "0009-0003-6954-0523",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Смирнова О.І.",
-                orcid: "0000-0003-2560-0726",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Кравченко О.Г.",
-                orcid: "0009-0009-7635-655X",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            },
-            {
-                full_name: "Гусаренко В.А.",
-                orcid: "0009-0001-9602-6103",
-                position: "Викладач",
-                rank: "",
-                section: "5"
-            }
-
-        ]
         const instance = axios.create({
-            baseURL: 'https://localhost:3300',
+            baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
+            // baseURL: 'https://localhost:3300',
         });
         try {
             instance.post('/users', teacher);
@@ -199,6 +98,10 @@ function MyModal(props) {
             throw error;
         }
     }
+    useEffect(() => {
+        setModalIsOpen(props.openModal)
+        console.log(props.openModal);
+    }, [props.openModal]);
     return (
         <div>
             <button className='submit-button' onClick={openModal}>{props.nameModal}</button>
@@ -281,6 +184,7 @@ function MyModal(props) {
                                 })}
                             </select>
                         </div>
+
                     </div>
                     <div className="modal-footer">
                         <button type="submit" className="submit-button" onClick={handleTestAddQuery}>
@@ -351,7 +255,7 @@ function MyModal(props) {
                     </div>
                 </Modal>
             }
-            {/* {props.nameModal === 'Підгрузити дані'
+            {props.nameModal !== 'Додати викладача' && props.nameModal !== 'Додати кафедру'
                 &&
                 <Modal
                     isOpen={modalIsOpen}
@@ -359,19 +263,18 @@ function MyModal(props) {
                     className="custom-modal-content"
                     overlayClassName="custom-modal-overlay"
                 >
-                    <button className="close-button" onClick={closeModal}>
-                        &#10006;
-                    </button>
                     <div className="modal-header">
-
-                        <h1>{props.statusLoading}</h1>
-
+                        <h1 className='main__title__modal'>{props.mainTitle}</h1>
+                        <button className="close-button" onClick={closeModal}>
+                            &#10006;
+                        </button>
                     </div>
-                    <div className="modal-header">
-                        <Loading />
+                    <div className="modal-body">
+                        {props.children}
                     </div>
+
                 </Modal>
-            } */}
+            }
 
         </div>
     );

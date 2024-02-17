@@ -1,5 +1,5 @@
 
-export const setDataDepartmentsController = (listTeaches, departments) => {
+export const setDataDepartmentsController = (listTeaches, departments,accountUser) => {
     const correctListTeaches = listTeaches.filter(teach => {
         return (
             teach.createdAt !== null &&
@@ -26,8 +26,7 @@ export const setDataDepartmentsController = (listTeaches, departments) => {
             }
             return existingDepartment;
         }
-    }).filter(item => item != undefined);
-
+    }).filter(item => item != undefined)
     const uniqueDepartments = Array.from(new Set(updatedDepartments.map(item => item.sectionDepartment)))
         .map(sectionDepartment => updatedDepartments.find(item => item.sectionDepartment === sectionDepartment))
         .sort(customSort);

@@ -1,5 +1,5 @@
 import './App.css';
-import Header from './components/panel';
+import Panel from './components/panel';
 import WorkContent from './components/worksContent';
 import { useState } from 'react';
 import axios from 'axios';
@@ -15,8 +15,55 @@ function App() {
   const [departments, setDepartments] = useState([])
   const [teacherList, setTeacherList] = useState()
   const [isTeacherList, setIsTeacherList] = useState(false)
+  const [accountUser, setAccountUser] = useState({
+    orcid: '',
+    name: '',
+    rank: '',
+    role: 'user',
+  })
+  const changeAccountUser = async (userData = null, role) => {
+    if (userData == null) {
+      setAccountUser({
+        orcid: '',
+        name: '',
+        rank: '',
+        role: 'user',
+      })
+      return
+    }
+    const teacher = findTeacherByOrcidInAllDepartments(departments, userData)
+    const instance = axios.create({
+      baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
+      // baseURL: `https://localhost:3300`,
 
+    });
+    if (!teacher) return
+    try {
+      const response = await instance.get(`/getAccountRole/${userData}`);
+      setAccountUser({
+        orcid: userData,
+        name: teacher.full_name,
+        rank: teacher.rank,
+        role: response.data,
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function findTeacherByOrcidInDepartment(department, orcid) {
+    return department.teacherList.find(teacher => teacher.orcid === orcid);
+  }
 
+  function findTeacherByOrcidInAllDepartments(departments, orcid) {
+    for (const department of departments) {
+      const foundTeacher = findTeacherByOrcidInDepartment(department, orcid);
+      if (foundTeacher) {
+        return foundTeacher;
+      }
+    }
+
+    return null;
+  }
   const addNewDepartment = (sectionDepartment) => {
     const updatedDepartments = [...departments, {
       sectionDepartment: sectionDepartment,
@@ -29,12 +76,12 @@ function App() {
     setIsTeacherList(true)
   }
   const setDataDepartments = (listTeaches) => {
-    setDepartments(setDataDepartmentsController(listTeaches, departments));
+    setDepartments(setDataDepartmentsController(listTeaches, departments, accountUser));
   }
   const searchDepartment = (sectionDepartment) => {
     const foundDepartment = departments.find(department => department.sectionDepartment === sectionDepartment);
     if (foundDepartment) {
-      setTeacherList(foundDepartment.teacherList)
+      setTeacherList(foundDepartment.teacherList.filter(item => item.orcid != accountUser.orcid))
       toggleIsOpenTeacherList()
     }
   }
@@ -42,13 +89,14 @@ function App() {
     if (showUpdate) {
       setIsTeacherList(false)
       const findTeacher = listTeaches.find(el => el.orcid === orsidAPI)
-      console.log(findTeacher)
       setIsLoading(true);
       setTeacher(findTeacher)
     }
 
     const instance = axios.create({
-      baseURL: 'https://localhost:3300',
+      baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
+      // baseURL: `https://localhost:3300`,
+
     });
     try {
       const response = await instance.get(`/getDataByOrcid/${orsidAPI}`);
@@ -57,7 +105,7 @@ function App() {
       }, 1000);
       if (showUpdate) {
         setListWorks(response.data.data)
-
+        return response
       }
     } catch (error) {
       setTimeout(() => {
@@ -71,13 +119,15 @@ function App() {
   return (
     <div className="App">
       <img className='fix' src={logo} />
-      <Header
+      <Panel
+        changeAccountUser={changeAccountUser}
         searchDepartment={searchDepartment}
         getItemsForContent={getItemsForContent}
         departments={departments}
         addNewDepartment={addNewDepartment}
         teacher={teacher}
         setDataDepartments={setDataDepartments}
+        accountUser={accountUser}
       />
       {isTeacherList
         ?
@@ -85,13 +135,13 @@ function App() {
           toggleIsOpenTeacherList={toggleIsOpenTeacherList}
           teacherList={teacherList}
           getItemsForContent={getItemsForContent}
+          accountUser={accountUser}
         />
         :
         <WorkContent
           teacher={teacher}
           listWorks={listWorks}
           isLoading={isLoading}
-
         />
       }
 
