@@ -33,9 +33,8 @@ function App() {
     }
     const teacher = findTeacherByOrcidInAllDepartments(departments, userData)
     const instance = axios.create({
-      baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
+      baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
       // baseURL: `https://localhost:3300`,
-
     });
     if (!teacher) return
     try {
@@ -92,11 +91,8 @@ function App() {
       setIsLoading(true);
       setTeacher(findTeacher)
     }
-
     const instance = axios.create({
-      baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
-      // baseURL: `https://localhost:3300`,
-
+      baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
     });
     try {
       const response = await instance.get(`/getDataByOrcid/${orsidAPI}`);

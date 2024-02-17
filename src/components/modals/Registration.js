@@ -32,8 +32,7 @@ const RegistrationModal = (props) => {
             password: password
         }
         const instance = axios.create({
-            baseURL: `https://${process.env.HOST}:${process.env.SERVER_PORT}`,
-
+            baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
             // baseURL: 'https://localhost:3300',
         });
         instance.post('/createNewAccount', teacher)
