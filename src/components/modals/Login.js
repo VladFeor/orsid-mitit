@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import Loading from '../loading';
 
 const LoginModal = (props) => {
-    const [orcidID, setOrcidID] = useState('0000-0001-7535-5023')
-    const [password, setPassword] = useState('12')
+    const [orcidID, setOrcidID] = useState('0000-0001-6671-870X')
+    const [password, setPassword] = useState('tjkmr987')
     const [isLoading, setIsLoading] = useState(false)
 
     const [isTrueOrcid, setIsTrueOrcid] = useState(true)
@@ -26,11 +26,11 @@ const LoginModal = (props) => {
         }
         const instance = axios.create({
             baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
-            // baseURL: 'https://localhost:3300',
         });
         instance.post('/autorizateAccount', teacher)
             .then((response) => {
                 handlerChangeAccountUser(response.data.orcid, response.data.role)
+                setIsLoading(false)
             })
             .catch(() => {
                 setIsTrueOrcid(false)

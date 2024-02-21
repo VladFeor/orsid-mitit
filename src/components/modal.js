@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import axios from 'axios';
-import Loading from './loading';
+import { toast } from 'react-toastify';
 
 
 Modal.setAppElement('#root');
@@ -79,31 +79,32 @@ function MyModal(props) {
             props.addNewDepartment(departmentTeacher)
         }
     }
-    const handleTestAddQuery = () => {
+    const handleAddTeacher = async () => {
         const teacher = {
             full_name: nameTeacher,
             orcid: orcidTeacher,
             position: positionTeacher,
             section: section,
             rank: rankTeacher,
-        }
+        };
+
         const instance = axios.create({
             baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
-            // baseURL: 'https://localhost:3300',
         });
         try {
-            instance.post('/users', teacher);
+            await instance.post('/users', teacher);
+            toast.success('Додано нового викладача')
+            props.updateTeacherList()
+            closeModal()
         } catch (error) {
-            console.error('Ошибка при получении данных:', error);
-            throw error;
+            toast.error(error.response.data.message);
         }
-    }
+    };
     useEffect(() => {
         setModalIsOpen(props.openModal)
-        console.log(props.openModal);
     }, [props.openModal]);
     return (
-        <div>
+        <div className='submit-button-modal'>
             <button className='submit-button' onClick={openModal}>{props.nameModal}</button>
             {props.nameModal === 'Додати викладача'
                 &&
@@ -187,7 +188,7 @@ function MyModal(props) {
 
                     </div>
                     <div className="modal-footer">
-                        <button type="submit" className="submit-button" onClick={handleTestAddQuery}>
+                        <button type="submit" className="submit-button" onClick={handleAddTeacher}>
                             Додати викладача
                         </button>
                     </div>

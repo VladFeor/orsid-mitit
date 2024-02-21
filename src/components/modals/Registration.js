@@ -16,7 +16,7 @@ const RegistrationModal = (props) => {
         setIsTrueOrcid(true)
     }
     const checkOrsidID = async () => {
-        if (password != confirmedPassword || password == '' || orcidID == '') return
+        if (password !== confirmedPassword || password === '' || orcidID === '') return
         setIsLoading(true)
 
         let orcidPattern = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/
@@ -33,7 +33,6 @@ const RegistrationModal = (props) => {
         }
         const instance = axios.create({
             baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
-            // baseURL: 'https://localhost:3300',
         });
         instance.post('/createNewAccount', teacher)
             .then((response) => {
@@ -89,7 +88,7 @@ const RegistrationModal = (props) => {
 
                             className={"custom-input " + (password !== confirmedPassword && 'error__value')}
                         />
-                        <div className={password == confirmedPassword ? 'error__input' : 'error__input open'}>Паролі не співпадають</div>
+                        <div className={password === confirmedPassword ? 'error__input' : 'error__input open'}>Паролі не співпадають</div>
                     </div>
                     <div className="modal-footer">
                         <button

@@ -1,4 +1,6 @@
+import axios from 'axios';
 import React from 'react';
+import { toast } from 'react-toastify';
 
 const TeacherList = (props) => {
   const checkedIsNumber = (value) => {
@@ -13,8 +15,18 @@ const TeacherList = (props) => {
       return a.full_name.localeCompare(b.full_name);
     });
   };
-  const deleteTeacher = () =>{
-    
+  const deleteTeacher = async (event,orsidAPI) => {
+    event.stopPropagation()
+    const instance = axios.create({
+      baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
+    });
+    try {
+      await instance.delete(`/users/${orsidAPI}`);
+      await props.updateTeacherList()
+      toast.success('Викладача видалено');
+    } catch (error) { 
+      toast.error(error.response.data.message);
+    }
   }
   return (
     <div className='teacher__list'>
@@ -38,7 +50,7 @@ const TeacherList = (props) => {
                 &&
                 <button
                   className='delete__teacher'
-
+                  onClick={(event) => deleteTeacher(event,item.orcid)}
                 >
                   -
                 </button>

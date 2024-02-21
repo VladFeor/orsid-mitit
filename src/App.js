@@ -1,11 +1,14 @@
 import './App.css';
 import Panel from './components/panel';
 import WorkContent from './components/worksContent';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import logo from './img/Department of _COMPUTER INFORMATION TECHNOLOGIES.png';
 import { setDataDepartmentsController } from './controller/appController';
 import TeacherList from './components/teacherList';
+import Header from './components/header/Header';
+import { toast } from 'react-toastify';
+
 
 
 function App() {
@@ -31,10 +34,11 @@ function App() {
       })
       return
     }
-    const teacher = findTeacherByOrcidInAllDepartments(departments, userData)
+    const teacher = findTeacherByOrcidInAllDepartments(departments, userData);
+    if(teacher == null) toast.error('Даного користувача не знайдено')
+    
     const instance = axios.create({
       baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
-      // baseURL: `https://localhost:3300`,
     });
     if (!teacher) return
     try {
@@ -111,10 +115,44 @@ function App() {
       throw error;
     }
   }
-
+  const updateTeacherList = async (sectionDepartment) => {
+    const instance = axios.create({
+      baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
+    });
+    try {
+      const response = await instance.get('/users');
+      const listTeachesCorrect = response.data.filter(teach => {
+        return (
+          teach.createdAt !== null &&
+          teach.full_name !== null &&
+          teach.id !== null &&
+          teach.orcid !== null &&
+          teach.rank !== null &&
+          teach.section !== null &&
+          teach.updatedAt !== null
+        );
+      })
+      setDataDepartments(listTeachesCorrect)
+      setTeacherList(listTeachesCorrect)
+    } catch (error) {
+      console.error('Ошибка при получении данных:', error);
+    }
+  }
+  useEffect(() => {
+    updateTeacherList()
+  }, []);
   return (
     <div className="App">
       <img className='fix' src={logo} />
+      <Header
+        changeAccountUser={changeAccountUser}
+        searchDepartment={searchDepartment}
+        getItemsForContent={getItemsForContent}
+        departments={departments}
+        addNewDepartment={addNewDepartment}
+        teacher={teacher}
+        setDataDepartments={setDataDepartments}
+        accountUser={accountUser} />
       <Panel
         changeAccountUser={changeAccountUser}
         searchDepartment={searchDepartment}
@@ -124,10 +162,13 @@ function App() {
         teacher={teacher}
         setDataDepartments={setDataDepartments}
         accountUser={accountUser}
+        updateTeacherList={updateTeacherList}
+        teacherList={teacherList}
       />
       {isTeacherList
         ?
         <TeacherList
+          updateTeacherList={updateTeacherList}
           toggleIsOpenTeacherList={toggleIsOpenTeacherList}
           teacherList={teacherList}
           getItemsForContent={getItemsForContent}
