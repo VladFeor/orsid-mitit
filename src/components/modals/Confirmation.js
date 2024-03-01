@@ -4,7 +4,7 @@ const Confirmation = (props) => {
 
     return (
         <>
-            <div className='main__title__modal'>Ви впевнені що хочете вийти з акаунту?</div>
+            <div className='main__title__modal'>{props.textConfirm}</div>
             <div className='modal__two__btn'>
                 <button
                     className="modal__btn--less submit-button"

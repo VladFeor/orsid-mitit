@@ -105,7 +105,14 @@ function MyModal(props) {
     }, [props.openModal]);
     return (
         <div className='submit-button-modal'>
-            <button className='submit-button' onClick={openModal}>{props.nameModal}</button>
+            <button
+                className='submit-button'
+                onClick={openModal}
+                style={props.isNotVisible && { display: 'none' }}
+            >
+                {props.nameModal}
+            </button>
+
             {props.nameModal === 'Додати викладача'
                 &&
                 <Modal

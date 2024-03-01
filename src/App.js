@@ -17,6 +17,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [departments, setDepartments] = useState([])
   const [teacherList, setTeacherList] = useState()
+  const [sectionDepartment, setSectionDepartment] = useState()
   const [isTeacherList, setIsTeacherList] = useState(false)
   const [accountUser, setAccountUser] = useState({
     orcid: '',
@@ -35,8 +36,8 @@ function App() {
       return
     }
     const teacher = findTeacherByOrcidInAllDepartments(departments, userData);
-    if(teacher == null) toast.error('Даного користувача не знайдено')
-    
+    if (teacher == null) toast.error('Даного користувача не знайдено')
+
     const instance = axios.create({
       baseURL: `https://${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT_SERVER}`,
     });
@@ -78,9 +79,12 @@ function App() {
   const toggleIsOpenTeacherList = () => {
     setIsTeacherList(true)
   }
-  const setDataDepartments = (listTeaches) => {
-    setDepartments(setDataDepartmentsController(listTeaches, departments, accountUser));
+  const setDataDepartments = async (listTeaches,sectionDepartment) => {
+    await setDepartments(setDataDepartmentsController(listTeaches, []));
   }
+  useEffect(() => {
+    searchDepartment(sectionDepartment);
+}, [departments]); 
   const searchDepartment = (sectionDepartment) => {
     const foundDepartment = departments.find(department => department.sectionDepartment === sectionDepartment);
     if (foundDepartment) {
@@ -132,8 +136,14 @@ function App() {
           teach.updatedAt !== null
         );
       })
-      setDataDepartments(listTeachesCorrect)
-      setTeacherList(listTeachesCorrect)
+      setDataDepartments(listTeachesCorrect,sectionDepartment)
+      setSectionDepartment(sectionDepartment)
+      if (sectionDepartment && !!departments.findIndex(item => item.section == sectionDepartment)) {
+        searchDepartment(sectionDepartment)
+      }
+      else{
+        searchDepartment(departments[0].sectionDepartment)
+      }
     } catch (error) {
       console.error('Ошибка при получении данных:', error);
     }

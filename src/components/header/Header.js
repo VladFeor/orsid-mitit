@@ -58,10 +58,9 @@ const Header = (props) => {
         <div className='header__panel'>
             <div className='account' >
                 <div className='element__account' onClick={() => setIsOpenMenuAccount(!isOpenMenuAccount)}>
-                    <img className='image__photo' src={accountImage} alt=''/>
+                    <img className='image__photo' src={accountImage} alt='' />
                     <div className='account__name'>{props.accountUser.name === '' ? 'Account' : props.accountUser.name}</div>
-                    {/* <div className='account__name fz14'>{props.accountUser.name != '' && `OrcidID: ${props.accountUser.orcid}`}</div>
-                    <div className='account__name fz14'>{props.accountUser.name != '' && `Role: ${props.accountUser.role}`}</div> */}
+                    <div className='account__name fz14'>{props.accountUser.name != '' && `OrcidID: ${props.accountUser.orcid}`}</div>
                 </div>
                 <div className={'account__menu'}>
                     {props.accountUser.name === '' ?
@@ -99,15 +98,13 @@ const Header = (props) => {
                                 Профіль
                             </button>
                             <MyModal
-                                key={'addDepartment'}
-                                addNewDepartment={props.addNewDepartment}
+                                key={'Condirm'}
                                 nameModal='Вийти'
-                                updateTeacherList={updateTeacherList}
-                                departments={props.departments}
                                 openModal={openModal}
                                 switchOpenModal={switchOpenModal}
                             >
                                 <Confirmation
+                                    textConfirm="Ви впевнені що хочете вийти з акаунту?"
                                     confirmExit={confirmExit}
                                 />
                             </MyModal>

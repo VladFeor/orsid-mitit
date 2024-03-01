@@ -163,10 +163,9 @@ h6 {
 }
 
 .delete__teacher {
-  width: 50px;
-  height: 50px;
+  padding: 7px;
   border-radius: 10px;
-  background-color: #501515;
+  background-color: #000000;
   position: absolute;
   top: 5px;
   line-height: 1;
@@ -767,19 +766,8 @@ h6 {
   }
 }
 
-/* @media screen and (max-width: 1510px) {
-  .container {
-    width: 750px;
-  }
-} */
-
 @media screen and (max-width: 1500px) {
   .header {
     left: -300px;
   }
 }
-
-/* @media screen and (max-width: 900px) {
-  .container {
-  }
-} */
