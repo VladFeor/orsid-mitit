@@ -17,6 +17,7 @@ function WorkContent(props) {
               <div>
                 <div className="person__name">{props.teacher.position}</div>
                 <div className="person__name">{props.teacher.rank} {props.teacher.full_name}</div>
+                <div className="person__orcid">OrcidID : {props.teacher.orcid}</div>
               </div>
               :
               <div className="person__name">Оберить викладача</div>

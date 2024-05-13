@@ -198,7 +198,7 @@ h6 {
 
 .teacher__details {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto 1fr;
   align-items: center;
 }
 
@@ -211,7 +211,7 @@ h6 {
 }
 
 .teacher__rank {
-  width: 300px;
+  width: 250px;
   text-align: start;
 }
 
@@ -374,6 +374,13 @@ h6 {
 .person__name {
   color: #ffff;
   font-size: 36px;
+  margin: 0 auto;
+  font-weight: 700;
+  margin-bottom: 45px;
+}
+.person__orcid{
+  color: #ffff;
+  font-size: 24px;
   margin: 0 auto;
   font-weight: 700;
   margin-bottom: 45px;

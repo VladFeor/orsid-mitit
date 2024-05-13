@@ -67,7 +67,8 @@ const TeacherList = (props) => {
               <div className='teacher__details'>
                 {/* <div className='teacher__position'>{item.position}</div> */}
                 <div className='teacher__rank'>{item.rank ? item.rank : 'Працівник ЗСУ'}</div>
-                <div className='teacher__name' style={{ minWidth: '200px' }}>{item.full_name}</div>
+                <div className='teacher__name' style={{ width: '400px' }}>{item.full_name}</div>
+                <div className='teacher__orcid' style={{ minWidth: '200px' }}>{item.orcid}</div>
               </div>
 
               {props.accountUser.role === 'admin' && (
